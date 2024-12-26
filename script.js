@@ -1,31 +1,49 @@
-document.getElementById('bookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch('process_booking.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        const messageDiv = document.getElementById('message');
-        messageDiv.classList.remove('hidden');
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        if (data.success) {
-            messageDiv.className = 'mt-4 text-center text-green-600';
-            messageDiv.textContent = data.message;
-            // Open the ticket in a new window
-            window.open(data.ticketUrl, '_blank');
-        } else {
-            messageDiv.className = 'mt-4 text-center text-red-600';
-            messageDiv.textContent = data.message;
-        }
-    })
-    .catch(error => {
-        const messageDiv = document.getElementById('message');
-        messageDiv.classList.remove('hidden');
-        messageDiv.className = 'mt-4 text-center text-red-600';
-        messageDiv.textContent = 'An error occurred. Please try again.';
+        const formData = new FormData(this);
+        
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while we process your request.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch('process_booking.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            Swal.close();
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.open(data.ticketUrl, '_blank');
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                title: 'Oops!',
+                text: 'An error occurred. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
     });
-});

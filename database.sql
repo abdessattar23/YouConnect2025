@@ -1,11 +1,8 @@
-CREATE DATABASE IF NOT EXISTS party_tickets;
-USE party_tickets;
-
 CREATE TABLE IF NOT EXISTS bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
     booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ticket_number VARCHAR(50) NOT NULL UNIQUE,
-    UNIQUE KEY unique_booking (email, full_name)
+    ticket_number TEXT NOT NULL UNIQUE,
+    UNIQUE(email, full_name)
 );
